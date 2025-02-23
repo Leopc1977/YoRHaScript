@@ -1,0 +1,52 @@
+// Déclaration d'unité et variables
+unit message = "Bienvenue dans YoRHaScript, unité A2 active."
+
+// Fonction principale, verse, exécutée au démarrage
+verse main() {
+    // Transmettre le message initial
+    transmit(message)
+
+    // Définition de l'ennemi pour illustrer une condition
+    unit enemyHealth = 100
+    unit playerPower = 20
+
+    // Condition de combat pour vérifier la santé de l'ennemi
+    condition enemyHealth <= 0 {
+        transmit("L'ennemi est déjà vaincu.")
+    } failure {
+        // Attaque de l'ennemi par le joueur
+        transmit("L'ennemi est encore en vie. L'attaque commence.")
+        cycle unit i in calibrate(1, 5) {
+            playerPower -= 1
+            transmit("Attaque en cours, puissance restante : " + playerPower)
+            condition playerPower <= 0 {
+                transmit("Épuisé, l'ennemi gagne!")
+                break
+            }
+        }
+    }
+
+    // Boucle d'affichage du message 'Hello World'
+    cycle unit i in calibrate(0, 3) {
+        transmit("Hello World, YoRHa 2B ici.")
+    }
+
+    // Vérification de fin de mission et réinitialisation de la mission
+    condition enemyHealth <= 0 {
+        transmit("Mission accomplie. Ennemi neutralisé.")
+        restore enemyHealth = 100
+    } failure {
+        transmit("Échec de la mission. Nouveau cycle nécessaire.")
+    }
+
+    // Terminer le processus
+    seal()
+}
+
+// Initialisation de la mission
+attempt {
+    main()
+} failure (error) {
+    transmit("Échec de l'initialisation : " + error)
+    seal()
+}
